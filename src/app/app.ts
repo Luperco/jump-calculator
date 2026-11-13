@@ -1,8 +1,12 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, DOCUMENT, inject, signal } from '@angular/core';
+import { Language, translations, UnitName } from './translations';
 import { APP_VERSION } from './version';
 
 @Component({ selector: 'app-root', styleUrl: './app.css', templateUrl: './app.html' })
 export class App {
+  private readonly document = inject(DOCUMENT);
+  protected readonly language = signal<Language>('it');
+  protected readonly copy = computed(() => translations[this.language()]);
   protected readonly version = APP_VERSION;
   protected readonly showVersion = signal(false);
 
@@ -12,7 +16,7 @@ export class App {
   }
 
   protected readonly referenceSpeed = 12.6;
-  protected readonly units = [
+  protected readonly units: ReadonlyArray<{ name: UnitName; speed: number }> = [
     { name: 'Infantry', speed: 36 },
     { name: 'Armored Car', speed: 72 },
     { name: 'Stormtrooper', speed: 48 },
@@ -23,7 +27,9 @@ export class App {
     { name: 'Heavy Tank', speed: 30 },
     { name: 'Balloons', speed: 25 },
   ];
-  protected readonly selectedUnit = signal(this.units[0].name);
+  protected readonly selectedUnit = signal<UnitName | ''>(this.units[0].name);
+  protected readonly formattedReferenceSpeed = computed(() =>
+    new Intl.NumberFormat(this.language()).format(this.referenceSpeed));
   protected readonly nominalSpeed = signal<number | null>(this.units[0].speed);
   protected readonly territoryMultiplier = signal(0.35);
   protected readonly gameSpeed = signal(1);
@@ -51,6 +57,30 @@ export class App {
     if (!Number.isSafeInteger(total)) return null;
     return { minutes: Math.floor(total / 60), seconds: (total % 60).toString().padStart(2, '0'), total };
   });
+  constructor() {
+    try {
+      const savedLanguage = this.document.defaultView?.localStorage.getItem('jump-calculator-language');
+      if (savedLanguage === 'en') this.applyLanguage(savedLanguage);
+    } catch {
+      // Keep the default language when storage is unavailable.
+    }
+  }
+
+  protected setLanguage(language: Language): void {
+    this.applyLanguage(language);
+    try {
+      this.document.defaultView?.localStorage.setItem('jump-calculator-language', language);
+    } catch {
+      // Switching languages still works for the current session.
+    }
+  }
+
+  private applyLanguage(language: Language): void {
+    this.language.set(language);
+    this.document.documentElement.lang = language;
+    this.document.title = `${this.copy().title} | Supremacy 1914`;
+  }
+
   protected updateGameSpeed(value: string): void {
     this.gameSpeed.set(Number(value));
   }

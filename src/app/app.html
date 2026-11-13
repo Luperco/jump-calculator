@@ -1,14 +1,36 @@
 <main>
   <header>
-    <span class="eyebrow">SUPREMACY 1914</span>
-    <h1>Calcolatore di salto</h1>
-    <p>La velocità cambia. La distanza resta la stessa.</p>
+    <div class="header-top">
+      <span class="eyebrow">SUPREMACY 1914</span>
+      <div class="languages" role="group" [attr.aria-label]="copy().language">
+        <button type="button" lang="it" aria-label="Italiano" [attr.aria-pressed]="language() === 'it'"
+          (click)="setLanguage('it')">
+          <svg viewBox="0 0 24 16" aria-hidden="true">
+            <path fill="#fff" d="M0 0h24v16H0z" />
+            <path fill="#009246" d="M0 0h8v16H0z" />
+            <path fill="#ce2b37" d="M16 0h8v16h-8z" />
+          </svg>
+        </button>
+        <button type="button" lang="en" aria-label="English" [attr.aria-pressed]="language() === 'en'"
+          (click)="setLanguage('en')">
+          <svg viewBox="0 0 24 16" aria-hidden="true">
+            <path fill="#012169" d="M0 0h24v16H0z" />
+            <path stroke="#fff" stroke-width="3" d="M0 0l24 16M24 0L0 16" />
+            <path stroke="#c8102e" d="M0 0l24 16M24 0L0 16" />
+            <path stroke="#fff" stroke-width="5" d="M12 0v16M0 8h24" />
+            <path stroke="#c8102e" stroke-width="3" d="M12 0v16M0 8h24" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <h1>{{ copy().title }}</h1>
+    <p>{{ copy().tagline }}</p>
   </header>
-  <section class="calculator" aria-label="Calcolo del tempo di salto">
+  <section class="calculator" [attr.aria-label]="copy().calculator">
     <div class="input-area">
       <div class="offset-fields select-fields">
         <div>
-          <label for="game-speed">Velocità di gioco</label>
+          <label for="game-speed">{{ copy().gameSpeed }}</label>
           <select id="game-speed" #gameSpeedSelect [value]="gameSpeed()" (change)="updateGameSpeed(gameSpeedSelect.value)">
             <option value="1">x1</option>
             <option value="4">x4</option>
@@ -16,61 +38,61 @@
           </select>
         </div>
         <div>
-          <label for="unit-type">Tipo di unità</label>
+          <label for="unit-type">{{ copy().unitType }}</label>
           <select id="unit-type" #unitType [value]="selectedUnit()" (change)="updateUnit(unitType.value)">
-            <option value="" disabled>Velocità personalizzata</option>
+            <option value="" disabled>{{ copy().customSpeed }}</option>
             @for (unit of units; track unit.name) {
-              <option [value]="unit.name">{{ unit.name }}</option>
+              <option [value]="unit.name">{{ copy().units[unit.name] }}</option>
             }
           </select>
         </div>
       </div>
       <div class="offset-fields speed-fields">
         <div>
-          <label for="nominal-speed">Velocità nominale</label>
+          <label for="nominal-speed">{{ copy().nominalSpeed }}</label>
           <input id="nominal-speed" type="number" inputmode="decimal" min="0" step="any"
             [value]="nominalSpeed()" (input)="updateNominalSpeed($event)" />
         </div>
         <div>
-          <label for="territory">Territorio</label>
+          <label for="territory">{{ copy().territory }}</label>
           <select id="territory" #territory [value]="territoryMultiplier()" (change)="updateTerritory(territory.value)">
-            <option value="1">Proprio (100%)</option>
-            <option value="0.7">Alleato (−30%)</option>
-            <option value="0.35">Nemico (−65%)</option>
+            <option value="1">{{ copy().own }}</option>
+            <option value="0.7">{{ copy().allied }}</option>
+            <option value="0.35">{{ copy().enemy }}</option>
           </select>
         </div>
       </div>
-      <label for="speed">Velocità effettiva</label>
+      <label for="speed">{{ copy().effectiveSpeed }}</label>
       <input id="speed" type="number" inputmode="decimal" min="0" step="any"
         [value]="speed()" (input)="updateSpeed($event)"
         [attr.aria-invalid]="result() === null" aria-describedby="speed-help" />
-      <p id="speed-help" class="hint">Puoi modificarla a mano. Se cambi velocità nominale o territorio, il campo si ricalcola.</p>
+      <p id="speed-help" class="hint">{{ copy().speedHelp }}</p>
     </div>
     <div class="result" aria-live="polite" aria-atomic="true">
-      <span class="eyebrow">TEMPO PER RAGGIUNGERE IL SALTO</span>
+      <span class="eyebrow">{{ copy().jumpTime }}</span>
       @if (result(); as time) {
         <div class="time"><strong>{{ time.minutes }}</strong><span>min</span><strong>{{ time.seconds }}</strong><span>sec</span></div>
-        <p>{{ time.total }} secondi totali</p>
+        <p>{{ time.total }} {{ copy().totalSeconds }}</p>
       } @else {
         <div class="empty">—</div>
-        <p>Inserisci una velocità valida per calcolare il tempo.</p>
+        <p>{{ copy().invalidSpeed }}</p>
       }
     </div>
-    <footer><span>RIFERIMENTO</span><p><strong>23 min 48 sec</strong> a velocità di gioco <strong>x1</strong> e velocità effettiva <strong>{{ referenceSpeed.toString().replace('.', ',') }}</strong></p></footer>
+    <footer><span>{{ copy().reference }}</span><p><strong>23 min 48 sec</strong> {{ copy().atGameSpeed }} <strong>x1</strong> {{ copy().andEffectiveSpeed }} <strong>{{ formattedReferenceSpeed() }}</strong></p></footer>
   </section>
   <section class="calculator timer" aria-labelledby="timer-title">
     <div class="input-area">
-      <h2 id="timer-title">Prepara il timer</h2>
-      <p class="hint" id="duration-help">Inserisci una durata: il tempo di salto verrà sottratto da ore e minuti indicati. I campi vuoti valgono zero.</p>
+      <h2 id="timer-title">{{ copy().timerTitle }}</h2>
+      <p class="hint" id="duration-help">{{ copy().durationHelp }}</p>
       <div class="offset-fields">
         <div>
-          <label for="duration-hours">Ore</label>
+          <label for="duration-hours">{{ copy().hours }}</label>
           <input id="duration-hours" type="number" inputmode="numeric" min="0" step="1"
             [value]="durationHours()" (input)="updateDuration($event, 'hours')"
             [attr.aria-invalid]="!validDuration()" aria-describedby="duration-help" />
         </div>
         <div>
-          <label for="duration-minutes">Minuti</label>
+          <label for="duration-minutes">{{ copy().minutes }}</label>
           <input id="duration-minutes" type="number" inputmode="numeric" min="0" step="1"
             [value]="durationMinutes()" (input)="updateDuration($event, 'minutes')"
             [attr.aria-invalid]="!validDuration()" aria-describedby="duration-help" />
@@ -78,26 +100,26 @@
       </div>
     </div>
     <div class="result" aria-live="polite" aria-atomic="true">
-      <span class="eyebrow">TEMPO DA IMPOSTARE SUL TIMER</span>
+      <span class="eyebrow">{{ copy().timerResult }}</span>
       @if (!result()) {
-        <p class="timer-message">Inserisci una velocità valida nel calcolatore.</p>
+        <p class="timer-message">{{ copy().timerInvalidSpeed }}</p>
       } @else if (!validDuration()) {
-        <p class="timer-message">Inserisci ore e minuti interi, maggiori o uguali a zero e di valore supportato.</p>
+        <p class="timer-message">{{ copy().invalidDuration }}</p>
       } @else if (remaining(); as time) {
         @if (time.exceeded) {
-          <p class="timer-message">Il tempo di salto supera la durata inserita: non resta tempo da impostare sul timer.</p>
+          <p class="timer-message">{{ copy().exceeded }}</p>
         } @else {
-          <div class="time timer-time"><strong>{{ time.hours }}</strong><span>ore</span><strong>{{ time.minutes }}</strong><span>min</span><strong>{{ time.seconds }}</strong><span>sec</span></div>
+          <div class="time timer-time"><strong>{{ time.hours }}</strong><span>{{ copy().hoursUnit }}</span><strong>{{ time.minutes }}</strong><span>min</span><strong>{{ time.seconds }}</strong><span>sec</span></div>
         }
       }
     </div>
   </section>
-  <p class="note">Il tempo diminuisce all’aumentare della velocità.<br>Risultato arrotondato al secondo più vicino.</p>
+  <p class="note">{{ copy().speedNote }}<br>{{ copy().roundingNote }}</p>
 </main>
 
 <div class="version-badge" (keydown.escape)="showVersion.set(false)"
   (focusout)="closeVersionOnFocusExit($event)">
-  <button type="button" aria-label="Versione del calcolatore" aria-controls="app-version"
+  <button type="button" [attr.aria-label]="copy().version" aria-controls="app-version"
     [attr.aria-expanded]="showVersion()" (click)="showVersion.set(!showVersion())">
     <img src="luperco-logo.jpg" alt="" width="32" height="32" />
   </button>
