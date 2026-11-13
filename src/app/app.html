@@ -1,0 +1,109 @@
+<main>
+  <header>
+    <span class="eyebrow">SUPREMACY 1914</span>
+    <h1>Calcolatore di salto</h1>
+    <p>La velocità cambia. La distanza resta la stessa.</p>
+  </header>
+  <section class="calculator" aria-label="Calcolo del tempo di salto">
+    <div class="input-area">
+      <div class="offset-fields select-fields">
+        <div>
+          <label for="game-speed">Velocità di gioco</label>
+          <select id="game-speed" #gameSpeedSelect [value]="gameSpeed()" (change)="updateGameSpeed(gameSpeedSelect.value)">
+            <option value="1">x1</option>
+            <option value="4">x4</option>
+            <option value="10">x10</option>
+          </select>
+        </div>
+        <div>
+          <label for="unit-type">Tipo di unità</label>
+          <select id="unit-type" #unitType [value]="selectedUnit()" (change)="updateUnit(unitType.value)">
+            <option value="" disabled>Velocità personalizzata</option>
+            @for (unit of units; track unit.name) {
+              <option [value]="unit.name">{{ unit.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="offset-fields speed-fields">
+        <div>
+          <label for="nominal-speed">Velocità nominale</label>
+          <input id="nominal-speed" type="number" inputmode="decimal" min="0" step="any"
+            [value]="nominalSpeed()" (input)="updateNominalSpeed($event)" />
+        </div>
+        <div>
+          <label for="territory">Territorio</label>
+          <select id="territory" #territory [value]="territoryMultiplier()" (change)="updateTerritory(territory.value)">
+            <option value="1">Proprio (100%)</option>
+            <option value="0.7">Alleato (−30%)</option>
+            <option value="0.35">Nemico (−65%)</option>
+          </select>
+        </div>
+      </div>
+      <label for="speed">Velocità effettiva</label>
+      <input id="speed" type="number" inputmode="decimal" min="0" step="any"
+        [value]="speed()" (input)="updateSpeed($event)"
+        [attr.aria-invalid]="result() === null" aria-describedby="speed-help" />
+      <p id="speed-help" class="hint">Puoi modificarla a mano. Se cambi velocità nominale o territorio, il campo si ricalcola.</p>
+    </div>
+    <div class="result" aria-live="polite" aria-atomic="true">
+      <span class="eyebrow">TEMPO PER RAGGIUNGERE IL SALTO</span>
+      @if (result(); as time) {
+        <div class="time"><strong>{{ time.minutes }}</strong><span>min</span><strong>{{ time.seconds }}</strong><span>sec</span></div>
+        <p>{{ time.total }} secondi totali</p>
+      } @else {
+        <div class="empty">—</div>
+        <p>Inserisci una velocità valida per calcolare il tempo.</p>
+      }
+    </div>
+    <footer><span>RIFERIMENTO</span><p><strong>23 min 48 sec</strong> a velocità di gioco <strong>x1</strong> e velocità effettiva <strong>{{ referenceSpeed.toString().replace('.', ',') }}</strong></p></footer>
+  </section>
+  <section class="calculator timer" aria-labelledby="timer-title">
+    <div class="input-area">
+      <h2 id="timer-title">Prepara il timer</h2>
+      <p class="hint" id="duration-help">Inserisci una durata: il tempo di salto verrà sottratto da ore e minuti indicati. I campi vuoti valgono zero.</p>
+      <div class="offset-fields">
+        <div>
+          <label for="duration-hours">Ore</label>
+          <input id="duration-hours" type="number" inputmode="numeric" min="0" step="1"
+            [value]="durationHours()" (input)="updateDuration($event, 'hours')"
+            [attr.aria-invalid]="!validDuration()" aria-describedby="duration-help" />
+        </div>
+        <div>
+          <label for="duration-minutes">Minuti</label>
+          <input id="duration-minutes" type="number" inputmode="numeric" min="0" step="1"
+            [value]="durationMinutes()" (input)="updateDuration($event, 'minutes')"
+            [attr.aria-invalid]="!validDuration()" aria-describedby="duration-help" />
+        </div>
+      </div>
+    </div>
+    <div class="result" aria-live="polite" aria-atomic="true">
+      <span class="eyebrow">TEMPO DA IMPOSTARE SUL TIMER</span>
+      @if (!result()) {
+        <p class="timer-message">Inserisci una velocità valida nel calcolatore.</p>
+      } @else if (!validDuration()) {
+        <p class="timer-message">Inserisci ore e minuti interi, maggiori o uguali a zero e di valore supportato.</p>
+      } @else if (remaining(); as time) {
+        @if (time.exceeded) {
+          <p class="timer-message">Il tempo di salto supera la durata inserita: non resta tempo da impostare sul timer.</p>
+        } @else {
+          <div class="time timer-time"><strong>{{ time.hours }}</strong><span>ore</span><strong>{{ time.minutes }}</strong><span>min</span><strong>{{ time.seconds }}</strong><span>sec</span></div>
+        }
+      }
+    </div>
+  </section>
+  <p class="note">Il tempo diminuisce all’aumentare della velocità.<br>Risultato arrotondato al secondo più vicino.</p>
+</main>
+
+<div class="version-badge" (keydown.escape)="showVersion.set(false)"
+  (focusout)="closeVersionOnFocusExit($event)">
+  <button type="button" aria-label="Versione del calcolatore" aria-controls="app-version"
+    [attr.aria-expanded]="showVersion()" (click)="showVersion.set(!showVersion())">
+    <img src="luperco-logo.jpg" alt="" width="32" height="32" />
+  </button>
+  <div id="app-version" class="version-tooltip" [class.is-open]="showVersion()">
+    {{ version }} by Luperco
+    <a href="https://www.vecteezy.com/free-png/3d-model">PNG Logo by Vecteezy</a>
+  </div>
+</div>
+

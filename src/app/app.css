@@ -1,0 +1,78 @@
+:host { display: block; }
+main { width: min(100% - 40px, 1120px); margin: 0 auto; padding: 40px 0 28px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+header { grid-column: 1 / -1; margin-bottom: 8px; }
+.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .16em; color: #a3b98d; }
+h1 { margin: 12px 0; font-size: clamp(28px, 6vw, 38px); letter-spacing: -.04em; }
+header p, .hint, .note { color: #9ca69f; line-height: 1.6; }
+header p { margin: 0; font-size: 15px; }
+.calculator { background: #1b2420; border: 1px solid #354239; border-radius: 20px; overflow: hidden; box-shadow: 0 24px 70px #0003; }
+.input-area { padding: 30px 30px 24px; }
+label { display: block; margin-bottom: 12px; font-size: 14px; font-weight: 600; }
+input, select { width: 100%; background: #111a16; border: 1px solid #506150; color: #f0f3e9; border-radius: 10px; padding: 14px 16px; font: inherit; font-size: 24px; }
+select { min-height: 58px; padding-inline: 10px; font-size: 14px; }
+input:focus-visible, select:focus-visible { outline: 3px solid #a3b98d; outline-offset: 3px; }
+.hint { font-size: 12px; margin: 10px 0 0; }
+.result { margin: 0 16px; padding: 28px 12px; text-align: center; background: #a3b98d0b; border: 1px solid #a3b98d26; border-radius: 12px; }
+.time { display: flex; align-items: baseline; justify-content: center; gap: 10px; margin: 16px 0 8px; }
+.time strong { font-size: clamp(38px, 10vw, 58px); letter-spacing: -.05em; font-weight: 600; font-variant-numeric: tabular-nums; }
+.time span { font-size: 16px; color: #a3b98d; }
+.time span:first-of-type { margin-right: 10px; }
+.result p { margin: 0; color: #9ca69f; font-size: 13px; line-height: 1.6; }
+.empty { font-size: 58px; margin: 8px 0; }
+footer { padding: 24px 30px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+footer > span { font-size: 10px; color: #9ca69f; letter-spacing: .1em; }
+footer p { font-size: 12px; margin: 0; color: #b6beb7; }
+footer strong { color: #e0e7db; font-weight: 500; }
+.note { grid-column: 1 / -1; text-align: center; font-size: 12px; margin: 0; }
+.timer { padding-bottom: 16px; }
+h2 { margin: 0 0 10px; font-size: 20px; letter-spacing: -.02em; }
+.offset-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+.speed-fields, .select-fields { margin: 0 0 20px; align-items: end; }
+.timer-time { gap: 7px; flex-wrap: wrap; }
+.timer-time strong { font-size: clamp(28px, 7vw, 42px); }
+.timer-time span { font-size: 13px; }
+.timer-time span:first-of-type { margin-right: 0; }
+.result .timer-message { margin-top: 18px; }
+:host { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+.version-badge {
+  position: fixed;
+  left: max(12px, env(safe-area-inset-left));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  z-index: 1;
+}
+.version-badge button {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 1px solid #506150;
+  border-radius: 50%;
+  background: radial-gradient(circle closest-side, #fff calc(100% - 2px), transparent calc(100% - 1px));
+  cursor: pointer;
+}
+.version-badge button:focus-visible { outline: 3px solid #a3b98d; outline-offset: 3px; }
+.version-badge img { object-fit: contain; }
+.version-tooltip {
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  padding: 8px 12px;
+  border: 1px solid #506150;
+  border-radius: 8px;
+  background: #111a16;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.version-tooltip.is-open { display: block; }
+.version-tooltip a {
+  display: block;
+  margin-top: 4px;
+  color: #b6beb7;
+  font-size: 11px;
+}
+@media (hover: hover) { .version-badge:hover .version-tooltip { display: block; } }
+@media (max-width: 799px) { main { width: min(100% - 40px, 560px); grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 440px) { .speed-fields { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 420px) { main { padding-top: 40px; } .input-area { padding: 24px; } footer { padding: 22px 24px; flex-wrap: wrap; } }
